@@ -21,34 +21,38 @@
 
 # Ramdisk
 PRODUCT_COPY_FILES += \
-    device/lge/g2-common/rootdir/init.g2.rc:root/init.g2.rc \
-    device/lge/g2-common/rootdir/init.g2.usb.rc:root/init.g2.usb.rc \
-    device/lge/g2-common/rootdir/fstab.g2:root/fstab.g2 \
-    device/lge/g2-common/rootdir/ueventd.g2.rc:root/ueventd.g2.rc
+    $(LOCAL_PATH)/init.g2.rc:root/init.g2.rc \
+    $(LOCAL_PATH)/init.g2.usb.rc:root/init.g2.usb.rc \
+    $(LOCAL_PATH)/fstab.g2:root/fstab.g2 \
+    $(LOCAL_PATH)/ueventd.g2.rc:root/ueventd.g2.rc
+
+# Thermal Configurations
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/configs/thermal-engine.conf:system/etc/thermal-engine.conf \
+    $(LOCAL_PATH)/configs/thermald.conf:system/etc/thermald.conf
 
 # Prebuilt input device calibration files
 PRODUCT_COPY_FILES += \
-    device/lge/g2-common/input/touch_dev.idc:system/usr/idc/touch_dev.idc
+    $(LOCAL_PATH)/input/touch_dev.idc:system/usr/idc/touch_dev.idc
 
 # Media configs
 PRODUCT_COPY_FILES += \
-    device/lge/g2-common/configs/audio_policy.conf:system/etc/audio_policy.conf \
-    device/lge/g2-common/configs/mixer_paths.xml:system/etc/mixer_paths.xml \
-    device/lge/g2-common/configs/audio_effects.conf:system/vendor/etc/audio_effects.conf \
-    device/lge/g2-common/configs/media_codecs.xml:system/etc/media_codecs.xml \
-    device/lge/g2-common/configs/media_profiles.xml:system/etc/media_profiles.xml
+    $(LOCAL_PATH)/configs/audio_effects.conf:system/etc/audio_effects.conf \
+    $(LOCAL_PATH)/configs/audio_policy.conf:system/etc/audio_policy.conf \
+    $(LOCAL_PATH)/configs/media_codecs.xml:system/etc/media_codecs.xml \
+    $(LOCAL_PATH)/configs/media_profiles.xml:system/etc/media_profiles.xml \
+    $(LOCAL_PATH)/configs/mixer_paths.xml:system/etc/mixer_paths.xml
 
 PRODUCT_COPY_FILES += \
-    device/lge/g2-common/configs/bcmdhd.cal:system/etc/wifi/bcmdhd.cal
+    $(LOCAL_PATH)/configs/bcmdhd.cal:system/etc/wifi/bcmdhd.cal
 
 # Prepatch to fix BT/WiFi bus lockups
 PRODUCT_COPY_FILES += \
-    device/lge/g2-common/bluetooth/bcm4335_prepatch.hcd:system/vendor/firmware/bcm4335_prepatch.hcd
+    $(LOCAL_PATH)/bluetooth/bcm4335_prepatch.hcd:system/vendor/firmware/bcm4335_prepatch.hcd
 
 # kernel tweaks
 PRODUCT_COPY_FILES += \
-    device/lge/g2-common/configs/00_frandom:system/etc/init.d/00_frandom \
-    device/lge/g2-common/configs/99mpdecRenamer:system/etc/init.d/99mpdecRenamer
+    $(LOCAL_PATH)/configs/00_frandom:system/etc/init.d/00_frandom
 
 # These are the hardware-specific features
 PRODUCT_COPY_FILES += \
@@ -72,7 +76,6 @@ PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.audio.low_latency.xml:system/etc/permissions/android.hardware.audio.low_latency.xml \
     frameworks/native/data/etc/android.hardware.bluetooth_le.xml:system/etc/permissions/android.hardware.bluetooth_le.xml
 
-
 # NFCEE access control
 NFCEE_ACCESS_PATH := $(LOCAL_PATH)/nfc/nfcee_access.xml
 
@@ -83,9 +86,6 @@ PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/com.android.nfc_extras.xml:system/etc/permissions/com.android.nfc_extras.xml \
     frameworks/native/data/etc/android.hardware.nfc.xml:system/etc/permissions/android.hardware.nfc.xml \
     frameworks/native/data/etc/android.hardware.nfc.hce.xml:system/etc/permissions/android.hardware.nfc.hce.xml
-
-PRODUCT_COPY_FILES += \
-    device/lge/g2-common/configs/thermal-engine-msm8974.conf:system/etc/thermal-engine.conf
 
 PRODUCT_TAGS += dalvik.gc.type-precise
 
@@ -99,7 +99,7 @@ PRODUCT_AAPT_PREF_CONFIG := xxhdpi
 PRODUCT_CHARACTERISTICS := nosdcard
 
 DEVICE_PACKAGE_OVERLAYS := \
-    device/lge/g2-common/overlay
+    $(LOCAL_PATH)/overlay
 
 # Live Wallpapers
 PRODUCT_PACKAGES += \
@@ -118,26 +118,22 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     hwaddrs
 
+PRODUCT_PROPERTY_OVERRIDES += \
+    qcom.thermal=thermal-engine
+
 # Media hal
 PRODUCT_PACKAGES += \
-    libc2dcolorconvert \
-    libstagefrighthw \
-    libOmxCore \
     libmm-omxcore \
+    libdivxdrmdecrypt \
     libOmxVdec \
-    libOmxVdecHevc \
     libOmxVenc \
-    libdashplayer \
-    qcmediaplayer \
-    libOmxAacEnc \
-    libOmxAmrEnc \
-    libOmxEvrcEnc \
-    libOmxQcelp13Enc
-
-PRODUCT_BOOT_JARS += qcmediaplayer
+    libOmxCore \
+    libstagefrighthw \
+    libc2dcolorconvert
 
 # Audio hal
 PRODUCT_PACKAGES += \
+    audio_policy.default \
     audio.primary.msm8974 \
     audio.a2dp.default \
     audio.usb.default \
@@ -152,23 +148,25 @@ PRODUCT_PACKAGES += \
 
 # Camera
 PRODUCT_PACKAGES += \
-    libqomx_core \
-    libmmcamera_interface \
-    libmmjpeg_interface \
-    camera.g2 \
-    mm-jpeg-interface-test \
-    mm-qcamera-app
+    camera.g2
+
+# GPS packages
+PRODUCT_PACKAGES += \
+    libloc_adapter \
+    libloc_eng \
+    libloc_api_v02 \
+    libgps.utils \
+    gps.msm8974
 
 # GPS configuration
 PRODUCT_COPY_FILES += \
-    device/lge/g2-common/configs/gps.conf:system/etc/gps.conf \
-    device/lge/g2-common/configs/izat.conf:system/etc/izat.conf \
-    device/lge/g2-common/configs/flp.conf:system/etc/flp.conf \
-    device/lge/g2-common/configs/sec_config:system/etc/sec_config 
+    $(LOCAL_PATH)/configs/gps.conf:system/etc/gps.conf \
+    $(LOCAL_PATH)/configs/izat.conf:system/etc/izat.conf \
+    $(LOCAL_PATH)/configs/flp.conf:system/etc/flp.conf \
+    $(LOCAL_PATH)/configs/sec_config:system/etc/sec_config 
 
 # Sensor Configs
 PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/rootdir/sensors.sh:root/sensors.sh \
     $(LOCAL_PATH)/configs/sap.conf:system/etc/sap.conf \
     $(LOCAL_PATH)/configs/sensor_def_common.conf:system/etc/sensor_def_common.conf
 
@@ -299,12 +297,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
     persist.audio.fluence.speaker=true \
     af.resampler.quality=4 \
     audio.offload.buffer.size.kb=64 \
-    av.offload.enable=true \
-    audio.offload.gapless.enabled=true \
-    av.offload.enable=true \
-    av.streaming.offload.enable=true \
-    audio.offload.pcm.enable=true \
-    audio.offload.24bit.enable=1
+    av.offload.enable=true
 
 # for powerhal
 PRODUCT_PROPERTY_OVERRIDES += \
@@ -320,7 +313,7 @@ PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
 
 # Dexopt system to /cache
 PRODUCT_PROPERTY_OVERRIDES += \
-    dalvik.vm.dexopt-data-only=0
+    dalvik.vm.dexopt-data-only=1
 
 # setup dalvik vm configs.
 $(call inherit-product, frameworks/native/build/phone-xxhdpi-2048-dalvik-heap.mk)
