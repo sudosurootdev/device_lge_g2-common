@@ -14,7 +14,9 @@
 # limitations under the License.
 #
 
+ifneq (,$(filter $(TARGET_DEVICE),lgl22))
 $(call inherit-product-if-exists, vendor/lge/g2-common/g2-common-vendor.mk)
+endif
 
 # Overlays
 DEVICE_PACKAGE_OVERLAYS := $(LOCAL_PATH)/overlay
